@@ -1,4 +1,4 @@
-# DCM
+# DCM: A package for simulation of maximum stationary value in Directed Configuration Model
 
 A Mathematica implementation of the [directed configuration
 model](https://en.wikipedia.org/wiki/Configuration_model#Directed_configuration_model). See
