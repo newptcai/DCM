@@ -43,13 +43,19 @@ stationaryProbNull::usage = "stationaryProbNull[g] computes the stationary \
 probability distribution for a simple random walk on g \
 by using NullSpace"
 
-stationaryProb::usage = "stationaryProb[g] finds one stationary \
+stationaryProb::usage = "stationaryProb[g] computes the stationary \
 probability distribution for a simple random walk on g \
 by using StationaryDistribution"
 
-stationaryProbSim::usage = "stationaryProbSim[g] finds one stationary \
+stationaryProbSim::usage = "stationaryProbSim[g] computes one stationary \
 probability distribution for a simple random walk on g \
 by simulating the random walk"
+
+pageRank::usage = "pageRank[g, a] computes the PageRank vector of g \
+with teleporting probability a by using Eigenvectors"
+
+pageRankSim::usage = "pageRankSim[g, a] computes the PageRank vector of g \
+with teleporting probability a by simulating the PageRank surfer"
 
 isAttractive::usage = "isAttractive[g,v] checks if there is a path from every \
 vertex to v in g"
@@ -195,10 +201,11 @@ stationary=StationaryDistribution[mp];
 pi=NProbability[x==#,x\[Distributed]stationary]&/@Range[n]]
 
 
-stationaryProbSim[g_,steps_]:=Module[{n,mp,walk,giant,pi1,tally,cur,prev},
+stationaryProbSim[g_,steps_,a_:0]:=Module[{n,mp,walk,giant,pi1,tally,cur,prev,transit},
 n=VertexCount[g];
 pi=ConstantArray[0.,n];
-mp=DiscreteMarkovProcess[1,g];
+transit=(1-a)*transitProbM[g] + a/n;
+mp=DiscreteMarkovProcess[1,transit];
 walk=RandomFunction[mp,{1,steps}]["Values"];
 tally=SortBy[Tally[walk],First];
 giant=tally[[;;,1]];
@@ -221,6 +228,24 @@ n=VertexCount[g];
 steps=Round[50*n Log[n]];
 stationaryProbSim[g,steps]
 ]
+
+pageRank[g_, a_/;0<=a<=1]:=Module[{transit,pi,n,ev},
+n=VertexCount[g];
+transit=(1-a)*Transpose[transitProbM[g]] + a/n;
+ev=Eigenvectors[N@transit,1,Method->{"Arnoldi"}][[1]];
+pi=ev/Total[ev]]
+
+
+pageRankSim[g_, a_/;0<=a<=1,steps_:0]:=Module[{n, s},
+n=VertexCount[g];
+If[steps==0,
+    s=Round[50*n Log[n]],
+    s=steps
+];
+stationaryProbSim[g,s,a]
+]
+
+
 
 
 maxStationary[g_]:=Module[
