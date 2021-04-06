@@ -312,20 +312,17 @@ maxStationary[g_, a_] :=
     ]
 
 
-simDCM[pdf_, r_, n_, p_, a_, nsample_] := 
+simDCM[pdf_, r_, n_, p_, a_, nsample_] :=
     Module[{degseq, heads, tails, data, maxdeg, col, m},
-        m=n*r;
+        m = n * r;
         degseq = pdf2Deg[pdf, r, n, p];
         maxdeg = Max[degseq[[1]]];
         {heads, tails} = deg2Stub /@ degseq;
-        data = 
-        ParallelTable[maxStationary[makeDCM[n, heads, tails], a],
-            {i, 1, nsample}
-        ];
+        data = ParallelTable[maxStationary[makeDCM[n, heads, tails], a], {i, 1, nsample}];
         (* turn data into a dataset *)
         col = {"pimax", "piDelta", "prmax", "prDelta", "attractive"};
         data = Dataset[data][All, AssociationThread[col, Range[Length[col]]]];
-        Dataset[<|"n"->n, "m"->m, "maxdeg"->maxdeg, "data"->data|>]
+        Dataset[<|"n" -> n, "m" -> m, "maxdeg" -> maxdeg, "data" -> data|>]
     ]
 
 
