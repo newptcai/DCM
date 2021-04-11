@@ -336,6 +336,11 @@ simAnalyze[dt_] :=
         With[{col = #},
             (dt3[ToString[StringForm["``/(\[CapitalDelta]/m)", col]]] = (#[col] / #["\[CapitalDelta]/m"])& @ dt3 // Normal // N)
         ]& /@ collist;
+        (* Add historgrams *)
+        dt3["hist"] = (With[{col = #},
+            Normal[dt2[All, col]] / dt3["\[CapitalDelta]/m"]
+        ]& /@ collist[[{1, 2}]]
+        );
         dt3
     ]
 
